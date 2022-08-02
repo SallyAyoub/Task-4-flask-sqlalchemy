@@ -76,7 +76,7 @@ def add_user(*args, **kwargs):
             db.session.add(address)
             db.session.add(phoneNumber)
             db.session.commit()
-        except:
+        except Exception::
             return 'There was an issue adding your task'
 
     return { "Message": user_data_dictionary['id'] }, 201
