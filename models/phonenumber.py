@@ -14,3 +14,4 @@ class PhoneNumber(db.Model):
     def __int__(self, phone_type, phone_number):
         self.type = phone_type
         self.number = phone_number
+        
