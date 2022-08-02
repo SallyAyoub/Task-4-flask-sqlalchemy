@@ -18,3 +18,5 @@ class Address(db.Model):
         self.city = city
         self.state = state
         self.postalCode = postalcode
+        
+        
