@@ -1,0 +1,181 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title:  Users API
+servers:
+  - url: http://127.0.0.1:5000/
+paths:
+  /users:
+    get:
+      summary: Lists all users
+      operationId: task4.list_users
+      responses:
+        '200':
+          description: A list of the users in the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/users"
+    post:
+      summary: Create a user
+      operationId: task4.add_user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/user"
+
+      responses:
+        '201':
+          description: create a user object, add it to the users list ad return it's ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+        '500':
+          description: user already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
+  /users/{id}:
+    get:
+      summary: Info for a specific user
+      operationId: task4.user_details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user to retrieve
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: retrieving the user information with the ID was successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+        '404':
+          description: the request was not valid, user doesn't exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
+    put:
+      summary: update Info for a specific user
+      operationId: task4.update_user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/user"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user to update
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: updating the user information with the ID was successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+        '404':
+          description: the request was not valid, user doesn't exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
+    delete:
+      summary: delete the user with the id
+      operationId: task4.delete_user_record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user to delete
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: deleting the user with the ID was successful
+        '404':
+          description: the request was not valid, user doesn't exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
+components:
+  schemas:
+    user:
+      type: object
+      required:
+        - id
+        - firstName
+        - lastName
+        - gender
+        - age
+        - address
+        - phoneNumbers
+      properties:
+        id:
+          type: integer
+          format: int64
+        firstName:
+          type: string
+        lastName:
+          type: string
+        gender:
+          type: string
+        age:
+          type: integer
+          format: int64
+        address:
+          type: object
+          $ref: "#/components/schemas/address"
+        phoneNumbers:
+          type: object
+          $ref: "#/components/schemas/phoneNumbers"
+    address:
+      type: object
+      required:
+        - streetAddress
+        - city
+        - state
+        - postalCode
+      properties:
+        streetAddress:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        postalCode:
+          type: string
+    phoneNumbers:
+      type: array
+      items:
+        type: object
+        properties:
+          type:
+            type: string
+          number:
+            type: string
+        required:
+          - type
+          - number
+    users:
+      type: array
+      items:
+        $ref: "#/components/schemas/user"
+    error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
