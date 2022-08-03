@@ -11,7 +11,7 @@ from schemas.userschema import UserSchema
 
 connexion_app = connexion.FlaskApp(__name__, specification_dir='openapi/')
 app = connexion_app.app
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test4.db'
 
 
 def list_users():
@@ -76,7 +76,7 @@ def add_user(*args, **kwargs):
             db.session.add(address)
             db.session.add(phoneNumber)
             db.session.commit()
-        except Exception::
+        except Exception:
             return 'There was an issue adding your task'
 
     return { "Message": user_data_dictionary['id'] }, 201
@@ -122,7 +122,6 @@ def update_user_data(user_data: dict, id: int) -> None:
     phoneList = user_data['phoneNumbers']
     phoneNumber.type = phoneList[0]['type']
     phoneNumber.number = phoneList[0]['number']
-    db.session.commit
 
 
 def delete_user_record(*args, **kwargs):
@@ -135,9 +134,9 @@ def delete_user_record(*args, **kwargs):
         user = User.query.get_or_404(user_id_delete)
         db.session.delete(user)
         db.session.commit()
-        return {"Message": "User Has been Deleted successfully"}, 200
+        return { "Message": "User Has been Deleted successfully" }, 200
     except Exception:
-        return {"Error": f"The user you are trying to delete isn't found: {traceback.format_exc()}"}, 404
+        return { "Error": f"The user you are trying to delete isn't found: {traceback.format_exc()}" }, 404
 
 
 def read_file() -> None:
@@ -160,17 +159,14 @@ def read_file() -> None:
                 return 'There was an issue adding your task'
 
 
-def populate_user(dictionary_of_user):
-    user = User(id=dictionary_of_user['id'], firstName=dictionary_of_user['firstName'],
-                lastName=dictionary_of_user['lastName'], gender=dictionary_of_user['gender'],
-                age=dictionary_of_user['age'])
-    address = Address(streetAddress=dictionary_of_user['address']['streetAddress'],
-                      city=dictionary_of_user['address']['city']
-                      , state=dictionary_of_user['address']['state'],
-                      postalCode=dictionary_of_user['address']['postalCode'], user_id=user.id)
-
-    phoneList = dictionary_of_user['phoneNumbers']
-    phoneNumber = PhoneNumber(type=phoneList[0]['type'], number=phoneList[0]['number'], user_id=user.id)
+def populate_user(user_data):
+    address = Address(**user_data['address'], user_id=user_data['id'])
+    phoneList = user_data['phoneNumbers']
+    phoneNumber = PhoneNumber(**phoneList[0], user_id=user_data['id'])
+    user_data.pop('address')
+    user_data.pop('phoneNumbers')
+    user = User(**user_data)
+    db.session.commit
     return user, address, phoneNumber
 
 
@@ -199,5 +195,3 @@ if __name__ == "__main__":
     ma.init_app(app)
     connexion_app.add_api('users.yaml')
     app.run(debug=True, host='0.0.0.0')
-    
-    
